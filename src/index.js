@@ -12,17 +12,25 @@ const client = new Client({
 
 client.on('ready', (bot) => {
     console.log(`✅ ${bot.user.tag} is online!`);
+    client.user.setActivity({
+        name: "for /help",
+        type: 3,
+    }); 
+    client.user.setStatus('dnd');
 });
 
-client.on('messageCreate', (msg) => {
-    const pesan = msg.content.toLowerCase();
+client.on('interactionCreate', (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
 
-    if (msg.author.bot) {
-        return;
+    if (interaction.commandName === 'ping') {
+        interaction.reply(`Hello, ${interaction.user.username} \nBot Latency: ${Date.now() - interaction.createdTimestamp}ms`);
     }
 
-    if (pesan === 'ping') {
-        msg.reply(`🏓 Latency is ${Date.now() - msg.createdTimestamp}ms`);
+    if (interaction.commandName === 'add') {
+        const num1 = interaction.options.get('first_number')?.value;
+        const num2 = interaction.options.get('second_number')?.value;
+
+        interaction.reply(`The sum is ${num1 + num2}`);
     }
 });
 
