@@ -1,7 +1,7 @@
 const { ActivityType } = require('discord.js');
 /** * @param {import('discord.js').Client} client */
 module.exports = (client) => {
-    console.log(`${client.user.tag} is online!`);
+    console.log(`✅ ${client.user.tag} is online!`);
 
     const statusList = [
         { name: 'UNDER DEVELOPMENT', type: ActivityType.Watching },

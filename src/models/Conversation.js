@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const messageSchema = new mongoose.Schema({
   role: String,
   parts: [{ text: String }],
-  tokenCount: Number, // Simpan jumlah token untuk pesan ini
+  tokenCount: Number,
 });
 
 const conversationSchema = new mongoose.Schema({

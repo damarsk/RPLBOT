@@ -1,16 +1,11 @@
 const axios = require("axios");
 require("dotenv").config();
-const mongoose = require('mongoose');
 const Conversation = require('../../models/Conversation');
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const MODEL_ID = process.env.MODEL_ID;
-const MONGODB_URI = process.env.MONGODB_URI;
 const AI_CHANNEL_ID = "1374642110174593078";
 const MAX_TOKENS = 500000;
-
-
-mongoose.connect(MONGODB_URI);
 
 function estimateTokenCount(text) {
   
