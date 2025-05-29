@@ -2,6 +2,7 @@ require('dotenv/config');
 
 const { Client, IntentsBitField } = require('discord.js');
 const { CommandKit } = require('commandkit');
+const aichat = require('./commands/General/aichat');
 
 const client = new Client({
     intents: [
@@ -10,6 +11,12 @@ const client = new Client({
         IntentsBitField.Flags.GuildMessages,
         IntentsBitField.Flags.MessageContent
     ]
+});
+
+client.on('messageCreate', (message) => {
+    if (typeof aichat.onMessage === 'function') {
+        aichat.onMessage(message);
+    }
 });
 
 new CommandKit({
