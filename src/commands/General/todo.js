@@ -1,7 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const Todo = require('../../models/Todo');
 
-/** @type {import('commandkit').CommandData}  */
 module.exports = {
     data: {
         name: 'todo',
@@ -54,9 +53,6 @@ module.exports = {
         ]
     },
 
-    /**
-     * @param {import('commandkit').SlashCommandProps} param0 
-     */
     run: async ({ interaction }) => {
         const userId = interaction.user.id;
         let todo = await Todo.findOne({ userId });
@@ -111,7 +107,6 @@ module.exports = {
         }
     },
 
-    /** @type {import('commandkit').CommandOptions} */
     options: {
         
     }

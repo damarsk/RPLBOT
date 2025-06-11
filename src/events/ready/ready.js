@@ -4,8 +4,7 @@ module.exports = (client) => {
     console.log(`✅ ${client.user.tag} is online!`);
 
     const statusList = [
-        { name: 'UNDER DEVELOPMENT', type: ActivityType.Watching },
-        { name: 'MAINTENANCE BY DAMAR', type: ActivityType.Watching }
+        { name: 'MAINTENANCE', type: ActivityType.Watching }
       ];
       
       let index = 0;
