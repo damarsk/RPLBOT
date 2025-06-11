@@ -4,7 +4,7 @@ module.exports = (client) => {
     console.log(`✅ ${client.user.tag} is online!`);
 
     const statusList = [
-        { name: 'MAINTENANCE', type: ActivityType.Watching }
+        { name: 'Barudak RPL', type: ActivityType.Watching }
       ];
       
       let index = 0;
@@ -12,7 +12,7 @@ module.exports = (client) => {
       const updateStatus = () => {
         client.user.setPresence({
           activities: [statusList[index]],
-          status: 'dnd'
+          status: 'online'
         });
         
         index = (index + 1) % statusList.length;
