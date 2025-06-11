@@ -96,11 +96,11 @@ async function sendSmartChunkedMessage(message, content, maxLength = 2000) {
       let finalChunk = chunk;
       if (chunks.length > 1) {
         if (i === 0) {
-          finalChunk = `${chunk}\n\n*[Lanjutan ke pesan berikutnya...]*`;
+          finalChunk = `${chunk}`;
         } else if (i === chunks.length - 1) {
-          finalChunk = `*[Lanjutan dari pesan sebelumnya]*\n\n${chunk}`;
+          finalChunk = `${chunk}`;
         } else {
-          finalChunk = `*[Lanjutan dari pesan sebelumnya]*\n\n${chunk}\n\n*[Lanjutan ke pesan berikutnya...]*`;
+          finalChunk = `${chunk}`;
         }
       }
       
