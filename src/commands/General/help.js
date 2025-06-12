@@ -11,10 +11,10 @@ module.exports = {
             .setTitle('Daftar Perintah')
             .setDescription('Berikut adalah daftar perintah yang tersedia:')
             .addFields(
-                { name: '`/ping`', value: 'Menampilkan latensi bot.' },
-                { name: '`/quote`', value: 'Memberikan kutipan inspiratif.' },
+                { name: '`/ai`', value: 'Menjawab pertanyaan dengan AI.' },
                 { name: '`/todo`', value: 'Mengelola daftar tugasmu.' },
-                { name: '`/ai`', value: 'Menjawab pertanyaan dengan AI.' }
+                { name: '`/quote`', value: 'Memberikan kutipan inspiratif.' },
+                { name: '`/about`', value: 'Informasi tentang bot.' },
             )
             .setTimestamp();
 
