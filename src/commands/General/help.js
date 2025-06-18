@@ -12,9 +12,11 @@ module.exports = {
             .setDescription('Berikut adalah daftar perintah yang tersedia:')
             .addFields(
                 { name: '`/ai`', value: 'Menjawab pertanyaan dengan AI.' },
-                { name: '`/todo`', value: 'Mengelola daftar tugasmu.' },
-                { name: '`/quote`', value: 'Memberikan kutipan inspiratif.' },
                 { name: '`/about`', value: 'Informasi tentang bot.' },
+                { name: '`/barcode`', value: "Generate Barcode." },
+                { name: '`/quote`', value: 'Memberikan kutipan inspiratif.' },
+                { name: '`/qr`', value: "Generate QRCode." },
+                { name: '`/todo`', value: 'Mengelola daftar tugasmu.' },
             )
             .setTimestamp();
 
