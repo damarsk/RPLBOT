@@ -1,5 +1,20 @@
 const { EmbedBuilder } = require('discord.js');
-const Todo = require('../../models/Todo');
+const sqlite3 = require('sqlite3').verbose();
+
+const db = new sqlite3.Database('./src/database/database.db', (err) => {
+    if (err) {
+        console.error('Error opening database:', err);
+    } else {
+        console.log('Database connected successfully!');
+    }
+});
+
+db.run(`
+    CREATE TABLE IF NOT EXISTS todos (
+        userId TEXT PRIMARY KEY,
+        tasks TEXT
+    )
+`);
 
 module.exports = {
     data: {
@@ -55,59 +70,80 @@ module.exports = {
 
     run: async ({ interaction }) => {
         const userId = interaction.user.id;
-        let todo = await Todo.findOne({ userId });
-        if (!todo) {
-            todo = new Todo({ userId, tasks: [] });
-        }
 
-        const sub = interaction.options.getSubcommand();
-
-        if (sub === 'add') {
-            const task = interaction.options.getString('task');
-            todo.tasks.push({ text: task });
-            await todo.save();
-            return interaction.reply(`✅ Tugas ditambahkan: **${task}**`);
-        }
-
-        if (sub === 'list') {
-            if (todo.tasks.length === 0) {
-                return interaction.reply('Daftar tugasmu kosong!');
+        db.get('SELECT tasks FROM todos WHERE userId = ?', [userId], (err, row) => {
+            if (err) {
+                console.error('Error fetching tasks:', err);
+                return interaction.reply('Terjadi kesalahan saat mengambil tugas.');
             }
-            const embed = new EmbedBuilder()
-                .setTitle('Daftar Tugasmu')
-                .setColor('Random')
-                .setDescription(
-                    todo.tasks.map((t, i) =>
-                        `${t.completed ? '✅' : '❌'} **${i + 1}.** ${t.text}`
-                    ).join('\n')
-                )
-                .setFooter({ text: `Requested By ${interaction.user.username}` })
-                .setTimestamp();
-            return interaction.reply({ embeds: [embed] });
-        }
 
-        if (sub === 'done') {
-            const idx = interaction.options.getInteger('index') - 1;
-            if (idx < 0 || idx >= todo.tasks.length) {
-                return interaction.reply('Nomor tugas tidak valid!');
-            }
-            todo.tasks[idx].completed = true;
-            await todo.save();
-            return interaction.reply(`Tugas nomor ${idx + 1} ditandai selesai!`);
-        }
+            let tasks = row ? JSON.parse(row.tasks) : [];
 
-        if (sub === 'remove') {
-            const idx = interaction.options.getInteger('index') - 1;
-            if (idx < 0 || idx >= todo.tasks.length) {
-                return interaction.reply('Nomor tugas tidak valid!');
+            const sub = interaction.options.getSubcommand();
+
+            if (sub === 'add') {
+                const task = interaction.options.getString('task');
+                tasks.push({ text: task, completed: false });
+
+                db.run('INSERT OR REPLACE INTO todos (userId, tasks) VALUES (?, ?)', [userId, JSON.stringify(tasks)], (err) => {
+                    if (err) {
+                        console.error('Error saving task:', err);
+                        return interaction.reply('Terjadi kesalahan saat menyimpan tugas.');
+                    }
+                    return interaction.reply(`✅ Tugas ditambahkan: **${task}**`);
+                });
             }
-            const removed = todo.tasks.splice(idx, 1);
-            await todo.save();
-            return interaction.reply(`Tugas dihapus: **${removed[0].text}**`);
-        }
+
+            if (sub === 'list') {
+                if (tasks.length === 0) {
+                    return interaction.reply('Daftar tugasmu kosong!');
+                }
+                const embed = new EmbedBuilder()
+                    .setTitle('Daftar Tugasmu')
+                    .setColor('Random')
+                    .setDescription(
+                        tasks.map((t, i) =>
+                            `${t.completed ? '✅' : '❌'} **${i + 1}.** ${t.text}`
+                        ).join('\n')
+                    )
+                    .setFooter({ text: `Requested By ${interaction.user.username}` })
+                    .setTimestamp();
+                return interaction.reply({ embeds: [embed] });
+            }
+
+            if (sub === 'done') {
+                const idx = interaction.options.getInteger('index') - 1;
+                if (idx < 0 || idx >= tasks.length) {
+                    return interaction.reply('Nomor tugas tidak valid!');
+                }
+                tasks[idx].completed = true;
+
+                db.run('UPDATE todos SET tasks = ? WHERE userId = ?', [JSON.stringify(tasks), userId], (err) => {
+                    if (err) {
+                        console.error('Error updating task:', err);
+                        return interaction.reply('Terjadi kesalahan saat menandai tugas selesai.');
+                    }
+                    return interaction.reply(`Tugas nomor ${idx + 1} ditandai selesai!`);
+                });
+            }
+
+            if (sub === 'remove') {
+                const idx = interaction.options.getInteger('index') - 1;
+                if (idx < 0 || idx >= tasks.length) {
+                    return interaction.reply('Nomor tugas tidak valid!');
+                }
+                const removed = tasks.splice(idx, 1);
+
+                db.run('UPDATE todos SET tasks = ? WHERE userId = ?', [JSON.stringify(tasks), userId], (err) => {
+                    if (err) {
+                        console.error('Error removing task:', err);
+                        return interaction.reply('Terjadi kesalahan saat menghapus tugas.');
+                    }
+                    return interaction.reply(`Tugas dihapus: **${removed[0].text}**`);
+                });
+            }
+        });
     },
 
-    options: {
-        
-    }
+    options: {}
 };
