@@ -54,6 +54,25 @@ module.exports = {
             },
             {
                 type: 1,
+                name: 'edit',
+                description: 'Edit tugas',
+                options: [
+                    {
+                        type: 4,
+                        name: 'index',
+                        description: 'Nomor tugas',
+                        required: true
+                    },
+                    {
+                        type: 3,
+                        name: 'newtask',
+                        description: 'Isi tugas baru',
+                        required: true
+                    }
+                ]
+            },
+            {
+                type: 1,
                 name: 'remove',
                 description: 'Hapus tugas',
                 options: [
@@ -124,6 +143,25 @@ module.exports = {
                         return interaction.reply('Terjadi kesalahan saat menandai tugas selesai.');
                     }
                     return interaction.reply(`Tugas nomor ${idx + 1} ditandai selesai!`);
+                });
+            }
+
+            if (sub === 'edit') {
+                const idx = interaction.options.getInteger('index') - 1;
+                const newTask = interaction.options.getString('newtask');
+
+                if (idx < 0 || idx >= tasks.length) {
+                    return interaction.reply('Nomor tugas tidak valid!');
+                }
+
+                tasks[idx].text = newTask;
+
+                db.run('UPDATE todos SET tasks = ? WHERE userId = ?', [JSON.stringify(tasks), userId], (err) => {
+                    if (err) {
+                        console.error('Error updating task:', err);
+                        return interaction.reply('Terjadi kesalahan saat mengedit tugas.');
+                    }
+                    return interaction.reply(`Tugas nomor ${idx + 1} berhasil diubah menjadi: "**${newTask}**"`);
                 });
             }
 
